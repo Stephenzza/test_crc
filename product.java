@@ -44,10 +44,6 @@ public class GaeiEngineerModeActivity extends BaseActivity implements
     private static final String INTENT_EXTRA = "position";
     private ArrayList<ListConfig.EngineerItem> mList;
     private DiagSignalListener mDiagListener;
-    private static final int TBOX_UPDATE_INDEX = 22;
-    private static final String TBOX_UPDATE_PKG = "com.ts.app.tboxupdate";
-    private static final String TBOX_UPDATE_RECEIVER_CLASS = "com.ts.app.tboxupdate.TBoxUsbBroadCast";
-    private static final String TBOX_UPDATE_RECEIVER_INTENT = "com.ts.app.tboxupdate.receiver";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,20 +103,19 @@ public class GaeiEngineerModeActivity extends BaseActivity implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position <= mList.size()) {
-            if (position == TBOX_UPDATE_INDEX) {
-                Intent tboxIntent = new Intent();
-                ComponentName componentName = new ComponentName(TBOX_UPDATE_PKG, TBOX_UPDATE_RECEIVER_CLASS);
-                tboxIntent.setComponent(componentName);
-                tboxIntent.setAction(TBOX_UPDATE_RECEIVER_INTENT);
-                sendBroadcast(tboxIntent);
-                return;
-            }
             if (mList.get(position).getType()
                     .equals(ListConfig.EngineerItem.TYPE_ACTIVITY)) {
                 startActivity(position);
             } else if (mList.get(position).getType()
                     .equals(ListConfig.EngineerItem.TYPE_FRAGMENT)) {
                 startFragmentActivity(position);
+            } else if (mList.get(position).getType()
+                    .equals(ListConfig.EngineerItem.TYPE_UPDATE)) {
+                Intent tboxIntent = new Intent();
+                ComponentName componentName = new ComponentName(mList.get(position).getPck(),
+                        mList.get(position).getCls());
+                tboxIntent.setComponent(componentName);
+                startActivity(tboxIntent);
             }
         } else {
             Logger.debug(TAG, "onItemClick: not found class"
