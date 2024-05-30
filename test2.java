@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2018-2019
  * All Rights Reserved by Thunder Software Technology Co., Ltd and its affiliates.
@@ -229,6 +230,10 @@ public class BtCallMainView extends SimpleSubjecter implements IBtCallMainView,
      */
     private String mReqKey = "";
     /**
+     * show loading animation flag.
+     */
+    private boolean mShowLoading = true;
+    /**
      * BtCallMainView construction.
      *
      * @param context context
@@ -404,41 +409,43 @@ public class BtCallMainView extends SimpleSubjecter implements IBtCallMainView,
      */
     private void notifyGetData(int index) {
         LogUtils.log(TAG, "notifyGetData dataType" + index);
-        Message msgUse = Message.obtain();
-        msgUse.what = BtActionDefine.ACTION_VIEW_NOTIFY_CONTACTS_OR_CALLRECORD;
-        if (R.id.ll_contacts == index) {
-            LogUtils.log(TAG, "notifyGetData index is contacts: " + index);
-            msgUse.arg1 = BtConstant.TYPE_CONTACTS;
-            boolean isChangeContact =
-                    mPhonebookAllFragment != null && mPhonebookAllFragment.isListEmpty();
-            if (isChangeContact) {
-                //only no data app will still get data.
-                BtCallMainView.this.notify(msgUse, FLAG_RUN_SYNC);
-                LogUtils.log(TAG, "notifyGetData index is contacts if (isChangeContact)...");
+        if (!mShowLoading) {
+            Message msgUse = Message.obtain();
+            msgUse.what = BtActionDefine.ACTION_VIEW_NOTIFY_CONTACTS_OR_CALLRECORD;
+            if (R.id.ll_contacts == index) {
+                LogUtils.log(TAG, "notifyGetData index is contacts: " + index);
+                msgUse.arg1 = BtConstant.TYPE_CONTACTS;
+                boolean isChangeContact =
+                        mPhonebookAllFragment != null && mPhonebookAllFragment.isListEmpty();
+                if (isChangeContact) {
+                    //only no data app will still get data.
+                    BtCallMainView.this.notify(msgUse, FLAG_RUN_SYNC);
+                    LogUtils.log(TAG, "notifyGetData index is contacts if (isChangeContact)...");
+                } else {
+                    //there is data exits and only change tab menu ui about contact.
+                    Message msg = new Message();
+                    msg.what = MSG_REFRESH_TAB_MENU_UI;
+                    msg.arg1 = BtConstant.TYPE_CONTACTS;
+                    mRefreshViewHandler.sendMessage(msg);
+                    LogUtils.log(TAG, "notifyGetData index is contacts else");
+                }
             } else {
-                //there is data exits and only change tab menu ui about contact.
-                Message msg = new Message();
-                msg.what = MSG_REFRESH_TAB_MENU_UI;
-                msg.arg1 = BtConstant.TYPE_CONTACTS;
-                mRefreshViewHandler.sendMessage(msg);
-                LogUtils.log(TAG, "notifyGetData index is contacts else");
-            }
-        } else {
-            LogUtils.log(TAG, "notifyGetData mUpdateRecords :" + mUpdateRecords);
-            boolean isChangeRecord = mKeyboardFragment != null && mKeyboardFragment.isListEmpty();
-            if (mUpdateRecords || isChangeRecord) {
-                //only no data app will still get data.
-                msgUse.arg1 = BtConstant.TYPE_KEYBORD;
-                BtCallMainView.this.notify(msgUse, FLAG_RUN_SYNC);
-                mUpdateRecords = false;
-                LogUtils.log(TAG, "notifyGetData mUpdateRecords || isChangeRecord");
-            } else {
-                //there is data exits and only change tab menu ui about keyboard.
-                Message msg = new Message();
-                msg.what = MSG_REFRESH_TAB_MENU_UI;
-                msg.arg1 = BtConstant.TYPE_KEYBORD;
-                mRefreshViewHandler.sendMessage(msg);
-                LogUtils.log(TAG, "notifyGetData else...");
+                LogUtils.log(TAG, "notifyGetData mUpdateRecords :" + mUpdateRecords);
+                boolean isChangeRecord = mKeyboardFragment != null && mKeyboardFragment.isListEmpty();
+                if (mUpdateRecords || isChangeRecord) {
+                    //only no data app will still get data.
+                    msgUse.arg1 = BtConstant.TYPE_KEYBORD;
+                    BtCallMainView.this.notify(msgUse, FLAG_RUN_SYNC);
+                    mUpdateRecords = false;
+                    LogUtils.log(TAG, "notifyGetData mUpdateRecords || isChangeRecord");
+                } else {
+                    //there is data exits and only change tab menu ui about keyboard.
+                    Message msg = new Message();
+                    msg.what = MSG_REFRESH_TAB_MENU_UI;
+                    msg.arg1 = BtConstant.TYPE_KEYBORD;
+                    mRefreshViewHandler.sendMessage(msg);
+                    LogUtils.log(TAG, "notifyGetData else...");
+                }
             }
         }
     }
