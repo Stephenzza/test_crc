@@ -291,6 +291,7 @@ public class BtCallMainView extends SimpleSubjecter implements IBtCallMainView,
     @Override
     public void onClick(View v) {
         LogUtils.log(TAG, "onClick" + v.getId());
+        LogUtils.log(TAG, "onClick" + v.getId());
         switch (v.getId()) {
             case R.id.ll_keyboard:
                 if (isShownTabKeyboard()) {
