@@ -65,6 +65,7 @@ public class AudioEventManager {
     private String mVersion;
     private boolean mIsMicOnVr = true;
     private boolean mVrEnable = true;
+    private Random random;
     /**
      * getInstance.
      */
@@ -91,6 +92,7 @@ public class AudioEventManager {
         mTasAudioEventManager.addIAudioEventListener(mIAudioEventListener);
         mTasAsrManager = TASAsrManager.getInstance();
         mVrCardBinder = new VrCardBinder();
+        random = new Random();
         try {
             mAudioExtManager = new AudioExtManager(mContext);
         } catch (Exception exception) {
@@ -369,12 +371,26 @@ public class AudioEventManager {
         @Override
         public void startVr() throws RemoteException {
             Logger.info(TAG,"startVr");
-            mTasAsrManager.startASR();
+            doStartVr();
         }
         @Override
         public List<String> getRandomSemantic() throws RemoteException {
             Logger.info(TAG,"mRandomSemantic:" + mRandomSemantic);
             return mRandomSemantic;
+        }
+        @Override
+        public String getNewRandomSemantic() throws RemoteException {
+            Logger.info(TAG,"getNewRandomSemantic");
+            return doRandomSemantic();
+        }
+    }
+    private void doStartVr() {
+        if (ConfigurationUtil.SYSTEM_MARIO.equals(mVersion)) {
+            if (!mVrState) {
+                VrHardKeyManager.getInstance(mContext).doStartVr();
+            }
+        } else {
+            mTasAsrManager.startASR();
         }
     }
     /**
@@ -393,6 +409,18 @@ public class AudioEventManager {
                 callbackOnRandomSemanticChange(mRandomSemantic);
             }
         }, 0, RANDOM_TIME);
+    }
+    private String doRandomSemantic() {
+        String randomSemantic;
+        do {
+            randomSemantic = mSemanticList.get(random.nextInt(mSemanticList.size()));
+        } while (randomSemantic.equals(mRandomSemantic.get(0)));
+        if (mRandomSemantic != null) {
+            mRandomSemantic.set(0, randomSemantic);
+        } else {
+            mRandomSemantic.add(randomSemantic);
+        }
+        return randomSemantic;
     }
     /**
      * callbackOnRadioAction.
