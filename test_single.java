@@ -44,17 +44,17 @@ public class CustomFontTextView extends AppCompatTextView {
         if (!TextUtils.isEmpty(fontName)) {
             switch (fontName) {
                 case Constants.FONT_ROBOTO_LIGHT:
-                    return FontCache.getTypeface(context);
+                    return FontCache.getTypeface("Roboto-Light.ttf", context);
                 case Constants.FONT_ROBOTO_REGULAR:
-                    return FontCache.getTypeface(context);
+                    return FontCache.getTypeface("Roboto-Regular.ttf", context);
                 case Constants.FONT_SOURCEHSC_BOLD:
-                    return FontCache.getTypeface(context);
+                    return FontCache.getTypeface("SourceHanSansCN-Bold.otf", context);
                 case Constants.FONT_SOURCEHSC_LIGHT:
-                    return FontCache.getTypeface(context);
+                    return FontCache.getTypeface("SourceHanSansCN-Light.otf", context);
                 case Constants.FONT_SOURCEHSC_MEDIUM:
-                    return FontCache.getTypeface(context);
+                    return FontCache.getTypeface("SourceHanSansCN-Medium.otf", context);
                 case Constants.FONT_SOURCEHSC_NORMAL:
-                    return FontCache.getTypeface(context);
+                    return FontCache.getTypeface("SourceHanSansCN-Normal.otf", context);
                 default:
                     return Typeface.DEFAULT;
             }
