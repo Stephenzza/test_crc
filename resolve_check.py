@@ -8,10 +8,7 @@ def extract_numbers(text):
     text = str(text)
     text = re.findall(r"\d+", text)
     text = [int(num) for num in text]
-    if text:
-        return text[0]
-    else:
-        return -1
+    return text
 def generate_detailed_diff(text1, text2):
     lines1 = text1.splitlines()
     lines2 = text2.splitlines()
@@ -140,12 +137,14 @@ async def resolve_check_process_chain(
             code_diff, code_lang, last_review, request_handler
         )
         token_tracker.update(resp_json)
-        resolve_status = parse_resolve_check_format(resolve_check_result)
-        for resolve in resolve_status:
-            if resolve.get("resolve", "") == "是":
-                random_id = resolve.get("issueID", "")
-                random_id = extract_numbers(random_id)
-                if random_id == -1:
-                    continue
-                resolve_results.append(format_dict[str(random_id)])
+        # resolve_status = parse_resolve_check_format(resolve_check_result)
+        regex = r"<id>(.*?)</id>"
+        resolve_status = re.search(regex, resolve_check_result)
+        if resolve_status:
+            resolve_status = resolve_status.group(1)
+            random_ids = extract_numbers(resolve_status)
+            for random_id in random_ids:
+                random_id = str(random_id)
+                if random_id in format_dict:
+                    resolve_results.append(format_dict[random_id])
     return resolve_results, token_tracker.get_total()
