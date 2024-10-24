@@ -1,34 +1,25 @@
-// 模拟投票系统
-let votes = {}; // 存储投票数据的对象
+// 定义商品信息
+let products = {
+    "apple": 2.5,
+    "banana": 1.5,
+    "orange": 3.0
+};
 
-// 函数：投票
-function vote(voterId, candidate) {
-    if (votes[voterId]) {
-        console.log("您已经投过票了！");
-        return;
-    }
-    votes[voterId] = candidate;
-    console.log("您已成功投票给候选人", candidate);
+// 获取用户输入的商品和数量
+let productName = prompt("请输入您要购买的商品名称（apple、banana、orange）：");
+let quantity = parseInt(prompt("请输入您要购买的数量："));
+
+// 检查用户输入是否有效
+if (!(productName in products) || isNaN(quantity) || quantity <= 0) {
+    console.log("请输入有效的商品名称和数量。");
+} else {
+    // 计算总价并输出
+    let totalPrice = products[productName] * quantity;
+    console.log(`您购买的商品总价为：$${totalPrice.toFixed(2)}`);
 }
-
-// 函数：计票
-function countVotes() {
-    let result = {};
-    for (let voterId in votes) {
-        let candidate = votes[voterId];
-        if (result[candidate]) {
-            result[candidate]++;
-        } else {
-            result[candidate] = 1;
-        }
-    }
-    console.log("投票结果：", result);
-}
-
-// 示例投票
-vote("001", "候选人A");
-vote("002", "候选人B");
-vote("003", "候选人A");
-vote("001", "候选人B"); // 注意这是一个重复投票
-
-countVotes();
+asssssssssssssssssssss
+d
+ad
+a
+a
+d
