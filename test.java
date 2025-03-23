@@ -47,6 +47,7 @@ import com.ts.lib.gallery.manager.VideoPlayer;
 import com.ts.lib.mining.DataMiningManager;
 import com.ts.lib.settings.TsAudioManager;
 import com.ts.lib.settings.interfaces.OnManagerConnChangedListener;
+import com.ts.lib.settings.interfaces.OnMuteChangedListener;
 import com.ts.lib.settings.interfaces.OnVolumeChangedListener;
 import java.lang.ref.WeakReference;
 /**
@@ -274,6 +275,7 @@ public class PlayVideoActivity extends GalleryBaseActivity {
             HmiLogUtil.verbose(TAG, "-onBinderStateChanged Audio+" + binderState);
             if (binderState) {
                 try {
+                    mAudioManager.registerMuteCallback(mOnMuteChangedListener);
                     mAudioManager.registerVolumeChangedListener(mVolumeChangeListener,
                             VOLUMNE_CHANGE_FLAG);
                     int value = mAudioManager.getGroupVolume(TsAudioManager.VOLUME_GROUP_MEDIA);
@@ -283,6 +285,32 @@ public class PlayVideoActivity extends GalleryBaseActivity {
                     HmiLogUtil.warning(TAG, "onBinderStateChanged Exception:", exceptions);
                 }
             }
+        }
+    };
+    /**
+     * Mute listener.
+     */
+    private OnMuteChangedListener mOnMuteChangedListener = new OnMuteChangedListener() {
+        @Override
+        public void onPhoneMuteStateChanged(boolean mute, int flag) {
+            HmiLogUtil.verbose(TAG, "-onPhoneMuteStateChanged()");
+        }
+        @Override
+        public void onMediaMuteStateChanged(boolean mute, int flag) {
+            HmiLogUtil.verbose(TAG, "-onMediaMuteStateChanged() mute-->" + mute + "flag-->" + flag);
+            int volume = mAudioManager.getGroupVolume(TsAudioManager.VOLUME_GROUP_MEDIA);
+            HmiLogUtil.verbose(TAG, "volume" + volume);
+            if (mute) {
+                setVoiceIcon(0);
+                showVolumeValue(0);
+            } else {
+                setVoiceIcon(volume);
+                showVolumeValue(volume);
+            }
+        }
+        @Override
+        public void onNaviMuteStateChanged(boolean mute, int flag) {
+            HmiLogUtil.verbose(TAG, "-onNaviMuteStateChanged()");
         }
     };
     private SeekBar.OnSeekBarChangeListener mSeekBarChangerListener
